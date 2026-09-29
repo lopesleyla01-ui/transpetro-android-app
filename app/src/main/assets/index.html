@@ -279,7 +279,7 @@ document.getElementById('bh').addEventListener('click',()=>renderHome())}
 
 document.getElementById('btnHome').addEventListener('click',()=>{if(confirm('Voltar ao início?'))renderHome()});
 
-async function init(){await openDB();APP.states=await loadAll();renderHome()}
+async function init(){try{await openDB();APP.states=await loadAll()}catch(e){document.getElementById('audioStatus').textContent='Storage indisponivel (sem SRS): '+e.message}try{renderHome()}catch(e){document.getElementById('main').innerHTML='<div style="padding:20px;color:red">ERRO: '+e.message+'<br><pre>'+e.stack+'</pre></div>'}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
