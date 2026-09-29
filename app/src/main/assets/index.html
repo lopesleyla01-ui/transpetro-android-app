@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Transpetro Estudo</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0071e3">
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--muted:#6e6e73;--primary:#0071e3;--primary-hover:#0077ed;--border:#d2d2d7;--success:#34c759;--success-bg:rgba(52,199,89,.12);--warning:#ff9500;--warning-bg:rgba(255,149,0,.12);--error:#ff3b30;--error-bg:rgba(255,59,48,.12);--accent-bg:rgba(0,113,227,.08);--pt-color:#af52de;--in-color:#ff9500;--te-color:#0071e3}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--text:#f5f5f7;--muted:#98989d;--border:#38383a;--accent-bg:rgba(10,132,255,.15);--success-bg:rgba(52,199,89,.2);--warning-bg:rgba(255,149,0,.2);--error-bg:rgba(255,59,48,.2)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);margin:0;line-height:1.55;min-height:100vh;display:flex;flex-direction:column}
+header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px 10px;position:sticky;top:0;z-index:10}
+.htop{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.htitle{font-size:18px;font-weight:700}
+.hback{background:none;border:none;color:var(--primary);font-size:15px;padding:4px 8px;cursor:pointer;font-family:inherit}
+.breadcrumb{font-size:11px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+.breadcrumb strong{color:var(--text)}
+.progress{display:flex;gap:4px;margin-top:8px}
+.progress .step{flex:1;height:3px;background:var(--border);border-radius:2px;transition:background .3s}
+.progress .step.active{background:var(--primary)}
+.progress .step.done{background:var(--success)}
+main{flex:1;padding:16px;max-width:720px;width:100%;margin:0 auto;padding-bottom:120px}
+h1{font-size:22px;margin:0 0 6px;line-height:1.25}
+h2{font-size:17px;margin:18px 0 8px}
+.subtitle{color:var(--muted);font-size:14px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.card p{margin:0 0 10px}
+.card p:last-child{margin-bottom:0}
+.card ul{margin:8px 0;padding-left:20px}
+.card ul li{margin-bottom:4px}
+.formula-box{background:var(--accent-bg);border-radius:10px;padding:16px 12px;margin:10px 0;text-align:center;overflow-x:auto}
+.frm{font-family:'Cambria Math',Cambria,'Times New Roman',serif;font-size:1.18em;letter-spacing:.03em;white-space:nowrap}
+.frm sup,.frm sub{font-size:.72em}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 2px;line-height:1.05}
+.frac .num{border-bottom:1px solid currentColor;padding:0 4px 2px}
+.frac .den{padding:2px 4px 0}
+.concept{border-left:3px solid var(--primary);padding-left:12px;margin:12px 0}
+.concept .label{font-weight:600;color:var(--primary)}
+.example{color:var(--muted);font-size:14px;font-style:italic;margin-top:4px}
+.trap{background:var(--warning-bg);border-left:3px solid var(--warning);padding:10px 12px;border-radius:6px;margin:8px 0;font-size:14px}
+.step-anim{opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s;padding:10px 0;border-bottom:1px dashed var(--border);font-size:15px}
+.step-anim:last-child{border-bottom:0}
+.step-anim.visible{opacity:1;transform:translateY(0)}
+.step-num{display:inline-block;width:22px;height:22px;background:var(--primary);color:#fff;border-radius:50%;text-align:center;font-size:12px;font-weight:700;line-height:22px;margin-right:8px}
+.question-stmt{font-size:15px;margin-bottom:12px}
+.focus-hint{background:var(--accent-bg);border-radius:8px;padding:10px 12px;font-size:14px;margin-bottom:14px;color:var(--primary)}
+.alternatives{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.alt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--card);cursor:pointer;text-align:left;font-family:inherit;font-size:15px;color:var(--text);transition:all .15s}
+.alt:hover:not(:disabled){border-color:var(--primary);background:var(--accent-bg)}
+.alt:disabled{cursor:not-allowed;opacity:.55}
+.alt .letter{font-weight:700;min-width:22px;color:var(--primary)}
+.alt.correct{background:var(--success-bg);border-color:var(--success)}
+.alt.correct .letter{color:var(--success)}
+.alt.wrong{background:var(--error-bg);border-color:var(--error)}
+.alt.wrong .letter{color:var(--error)}
+.alt.dw{opacity:.4}
+.feedback{margin-top:14px;padding:14px 16px;border-radius:10px;font-size:14.5px;line-height:1.6}
+.feedback.hint{background:var(--warning-bg);border-left:3px solid var(--warning)}
+.feedback.explain{background:var(--error-bg);border-left:3px solid var(--error)}
+.feedback.success{background:var(--success-bg);border-left:3px solid var(--success)}
+.feedback strong{display:block;margin-bottom:4px}
+footer{background:var(--card);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:8px;position:fixed;bottom:0;left:0;right:0;z-index:10}
+.btn{flex:1;padding:12px;border:none;border-radius:10px;background:var(--primary);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn:hover{background:var(--primary-hover)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.secondary{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+.btn.icon{flex:0 0 46px;padding:12px 0}
+.audio-status{font-size:11px;color:var(--muted);text-align:center;padding:4px;background:var(--card);position:fixed;bottom:70px;left:0;right:0;z-index:9}
+.home-hero{background:linear-gradient(135deg,var(--primary),#4c8ff5);color:#fff;border-radius:16px;padding:24px 20px;margin-bottom:20px}
+.home-hero h1{color:#fff;margin:0 0 4px;font-size:24px}
+.home-hero .greeting{opacity:.85;font-size:14px}
+.home-stats{display:flex;gap:12px;margin-top:16px}
+.stat{flex:1;background:rgba(255,255,255,.18);padding:12px;border-radius:10px;text-align:center}
+.stat .n{font-size:22px;font-weight:700}
+.stat .l{font-size:11px;opacity:.85;letter-spacing:.3px;text-transform:uppercase;margin-top:2px}
+.subject-list{display:flex;flex-direction:column;gap:10px}
+.subject-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;font-family:inherit;color:var(--text)}
+.subject-item:hover{border-color:var(--primary)}
+.subject-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;flex-shrink:0}
+.subject-icon.pt{background:var(--pt-color)}
+.subject-icon.in{background:var(--in-color)}
+.subject-icon.te{background:var(--te-color)}
+.subject-body{flex:1}
+.subject-name{font-weight:600;font-size:15px}
+.subject-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.subject-arrow{color:var(--muted);font-size:22px}
+.hwi-title{font-size:20px;text-align:center;margin:20px 0 24px}
+.hwi-buttons{display:flex;flex-direction:column;gap:10px}
+.hwi-btn{padding:16px;border-radius:12px;border:1px solid var(--border);background:var(--card);font-size:16px;font-weight:600;cursor:pointer;text-align:left;font-family:inherit;color:var(--text);display:flex;align-items:center;gap:12px}
+.hwi-btn .lbl{flex:1}
+.hwi-btn .interval{font-size:12px;color:var(--muted);font-weight:400}
+.hwi-btn.err{border-color:var(--error)}
+.hwi-btn.hard{border-color:var(--warning)}
+.hwi-btn.ok{border-color:var(--primary)}
+.hwi-btn.easy{border-color:var(--success)}
+.done-hero{text-align:center;padding:40px 20px}
+.done-hero .emoji{font-size:64px;margin-bottom:16px}
+.done-hero h1{font-size:24px;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div class="htop">
+    <button class="hback" id="btnHome" style="display:none">← Início</button>
+    <div class="htitle" id="headerTitle">Transpetro</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="breadcrumb" id="breadcrumb"></div>
+  <div class="progress" id="progress" style="display:none"></div>
+</header>
+
+<main id="main"></main>
+
+<div class="audio-status" id="audioStatus"></div>
+<footer id="footer"></footer>
+
+<script>
+const CARDS=[
+{id:"te-a1",tipo:"aula",disciplina:"termodinamica",assunto:"1ª Lei — Sistemas Abertos",blocos:[
+{id:"A",label:"Conceito central",audio:"Primeira lei da termodinâmica em sistemas abertos. A energia que entra é igual à energia que sai. Ou seja, tudo que entra, sai. Exemplo: numa turbina, entra vapor quente com muita energia. Essa energia se divide em dois caminhos de saída: parte sai como vapor mais frio, parte vira trabalho pelo eixo, que depois pode virar eletricidade num gerador. A soma dos dois é igual ao que entrou. Nada some.",html:`<h1>1ª Lei — Sistemas Abertos</h1><p class="subtitle">Conceito central</p><div class="card"><p><strong>A energia que entra é igual à energia que sai.</strong></p><p>Ou seja, tudo que entra, sai.</p><p><strong>Exemplo:</strong> numa turbina, entra vapor quente com muita energia. Essa energia se divide em dois caminhos:</p><ul><li>parte sai como vapor mais frio</li><li>parte vira trabalho pelo eixo (que depois pode virar eletricidade num gerador)</li></ul><p>A soma dos dois é igual ao que entrou. Nada some.</p></div>`},
+{id:"B",label:"Conceitos base",audio:"Lembrando que: entalpia é a energia guardada dentro do fluido, vem de duas coisas, temperatura alta e pressão alta. Quanto mais quente e mais sob pressão estiver o fluido, mais entalpia. Exemplo: vapor a 300 graus dentro de uma caldeira a 40 bar tem entalpia altíssima; água à temperatura ambiente na pia tem entalpia baixa. Energia cinética é a energia do movimento. Fluido parado, cinética zero. Fluido correndo rápido, cinética alta. Energia potencial é a energia guardada pela altura. Calor é energia que atravessa a parede do equipamento por diferença de temperatura. Trabalho de eixo é energia trocada por eixo girando. Turbina, bomba, compressor.",html:`<h1>Conceitos base</h1><p class="subtitle">Lembrando que:</p><div class="card"><div class="concept"><p><span class="label">Entalpia (h)</span> é a energia guardada dentro do fluido — vem da temperatura e da pressão.</p><p>Quanto mais quente e mais sob pressão estiver o fluido, mais entalpia.</p><p class="example">Ex.: vapor a 300 °C em caldeira a 40 bar → altíssima. Água na pia → baixa.</p></div><div class="concept"><p><span class="label">Energia cinética</span> é a energia do movimento.</p><p class="example">Ex.: água a 100 m/s → altíssima. Parada → quase zero.</p></div><div class="concept"><p><span class="label">Energia potencial</span> é a energia guardada pela altura.</p><p class="example">Ex.: caixa d'água no telhado → alta em relação à torneira.</p></div><div class="concept"><p><span class="label">Calor (q)</span> é energia que atravessa a parede por diferença de temperatura.</p><p class="example">Ex.: no trocador, vapor quente aquece água fria.</p></div><div class="concept"><p><span class="label">Trabalho de eixo (w)</span> é energia trocada por eixo girando: turbina, bomba, compressor.</p></div></div><h2>A equação completa</h2><div class="formula-box"><span class="frm">h<sub>1</sub> + <span class="frac"><span class="num">V<sub>1</sub><sup>2</sup></span><span class="den">2</span></span> + g·z<sub>1</sub> + q &nbsp;=&nbsp; h<sub>2</sub> + <span class="frac"><span class="num">V<sub>2</sub><sup>2</sup></span><span class="den">2</span></span> + g·z<sub>2</sub> + w</span></div><p class="subtitle" style="text-align:center">Índice 1 = entrada · Índice 2 = saída</p>`},
+{id:"C",label:"Regra prática + armadilhas",audio:"Regra prática em bocal: bocal não tem eixo, quase não troca calor com o ambiente, e a altura muda muito pouco. Esses três saem da conta. Sobra só entalpia e cinética. Duas armadilhas. Primeira: unidade. Entalpia geralmente vem em kilojoule por kilograma. Cinética sai em joule por kilograma. Antes de somar, multiplica entalpia por mil pra ficarem iguais. Segunda: sinal do trabalho. Se o sistema entrega trabalho, turbina, w é positivo. Se recebe trabalho, bomba ou compressor, w é negativo.",html:`<h1>Regra prática + armadilhas</h1><div class="card"><h2 style="margin-top:0">Regra prática em bocal</h2><p>Bocal não tem eixo (w = 0), quase não troca calor (q ≈ 0), altura muda pouco.</p><p><strong>Esses três saem da conta.</strong> Sobra:</p><div class="formula-box"><span class="frm">h<sub>1</sub> + <span class="frac"><span class="num">V<sub>1</sub><sup>2</sup></span><span class="den">2</span></span> &nbsp;=&nbsp; h<sub>2</sub> + <span class="frac"><span class="num">V<sub>2</sub><sup>2</sup></span><span class="den">2</span></span></span></div></div><h2>Duas armadilhas</h2><div class="trap"><strong>1) Unidade.</strong> Entalpia em <strong>kJ/kg</strong>. Cinética em <strong>J/kg</strong>. Multiplica entalpia por <strong>1000</strong>.</div><div class="trap"><strong>2) Sinal do trabalho.</strong><br>Sistema <strong>entrega</strong> (turbina) → w <strong>positivo</strong>.<br>Sistema <strong>recebe</strong> (bomba, compressor) → w <strong>negativo</strong>.</div>`},
+{id:"D",label:"Exemplo resolvido",audio:"Vamos ver um exemplo. Vapor entra numa turbina adiabática com entalpia de 3400 kilojoule por kilograma. Sai com 2800. Velocidades desprezíveis. Qual o trabalho específico? Pense o seguinte. Ele quer saber quanto trabalho o eixo produziu. Imagine o vapor entrando cheio de energia e saindo com bem menos, essa diferença virou trabalho. Adiabática significa sem troca de calor, q é zero. Velocidades desprezíveis eliminam cinética. Sem altura, elimino potencial. Sobra: h um igual a h dois mais w. Isolando: w igual a h um menos h dois. Calculando: 3400 menos 2800 igual a 600. Logo, a resposta é a alternativa B.",animate:true,html:`<h1>Exemplo resolvido</h1><div class="card"><p class="question-stmt"><strong>Enunciado:</strong> Vapor entra numa turbina adiabática com entalpia de <strong>3400 kJ/kg</strong>. Sai com <strong>2800 kJ/kg</strong>. Velocidades desprezíveis. Trabalho específico?</p><ul style="list-style:none;padding-left:0"><li>A) 200 kJ/kg</li><li>B) 600 kJ/kg</li><li>C) 800 kJ/kg</li><li>D) 1200 kJ/kg</li><li>E) 3400 kJ/kg</li></ul></div><h2>Passo a passo</h2><div class="card"><div class="step-anim"><span class="step-num">1</span>Turbina <strong>adiabática</strong> → q = 0</div><div class="step-anim"><span class="step-num">2</span><strong>Velocidades desprezíveis</strong> → cinética = 0</div><div class="step-anim"><span class="step-num">3</span>Sem altura → potencial = 0</div><div class="step-anim"><span class="step-num">4</span>Fórmula: <span class="frm">h<sub>1</sub> = h<sub>2</sub> + w</span></div><div class="step-anim"><span class="step-num">5</span>Isolando: <span class="frm">w = h<sub>1</sub> − h<sub>2</sub></span></div><div class="step-anim"><span class="step-num">6</span><span class="frm">w = 3400 − 2800 = 600 kJ/kg</span></div><div class="step-anim"><span class="step-num">✓</span><strong>Resposta: alternativa B</strong></div></div>`}
+]},
+{id:"te-q1",tipo:"questao",disciplina:"termodinamica",assunto:"1ª Lei — Bocal",
+enunciado:`Vapor entra num bocal adiabático com velocidade desprezível e entalpia de <strong>3200 kJ/kg</strong>. Sai com entalpia de <strong>2900 kJ/kg</strong>. Qual a velocidade de saída, em m/s?`,
+focus:`bocal elimina w e q. Velocidade de entrada desprezível também sai. Sobra <span class="frm">h<sub>1</sub> = h<sub>2</sub> + V<sub>2</sub><sup>2</sup>/2</span>. Cuidado: entalpia em kJ tem que virar J.`,
+alts:[["A","100 m/s"],["B","245 m/s"],["C","548 m/s"],["D","774 m/s"],["E","1095 m/s"]],
+correct:"D",
+hint:"Bocal adiabático, sem eixo, sem altura. Fórmula reduz a h₁ = h₂ + V₂²/2. Isola V₂ = √(2·(h₁−h₂)). Antes, converte Δh de kJ pra J multiplicando por 1000.",
+explains:{A:"100 m/s vem de esquecer o fator 2 na fórmula V² = 2·Δh e misturar unidade. Conta certa: V₂ = √(2 × 300.000) ≈ 774.",B:"245 m/s vem de esquecer converter kJ pra J. Δh = 300 kJ/kg = 300.000 J/kg.",C:"548 m/s vem de calcular √(300.000) sem o fator 2 da fórmula V² = 2·Δh.",E:"1095 m/s vem de multiplicar por 4 em vez de 2."},
+success:"Fórmula reduzida h₁ = h₂ + V₂²/2. Isolando: V₂ = √(2·(h₁−h₂)) = √(2 × 300 × 1000) = √600.000 ≈ 774 m/s. Alternativa D."},
+{id:"te-q2",tipo:"questao",disciplina:"termodinamica",assunto:"1ª Lei — Trocador",
+enunciado:`Num trocador em regime permanente, água entra a 25 °C (h₁ = 105 kJ/kg) e sai a 85 °C (h₂ = 356 kJ/kg). Vazão de <strong>2 kg/s</strong>. Qual a taxa de calor recebida?`,
+focus:"Trocador: w = 0, cinética e potencial ≈ 0. Sobra Q̇ = ṁ·(h₂ − h₁).",
+alts:[["A","125,5 kW"],["B","251 kW"],["C","502 kW"],["D","712 kW"],["E","922 kW"]],
+correct:"C",
+hint:"Trocador não tem trabalho. Balanço: Q̇ = ṁ·Δh. Multiplica vazão pela diferença de entalpia.",
+explains:{A:"125,5 kW é metade. Provavelmente dividiu por 2 sem motivo.",B:"251 kW é só Δh, faltou multiplicar pela vazão.",D:"712 kW não bate com ṁ·Δh = 2·251 = 502.",E:"922 kW não bate com o balanço."},
+success:"Q̇ = ṁ·(h₂ − h₁) = 2 × (356 − 105) = 502 kW. Alternativa C."},
+{id:"te-q3",tipo:"questao",disciplina:"termodinamica",assunto:"1ª Lei — Compressor",
+enunciado:`Um compressor adiabático recebe ar com h₁ = <strong>300 kJ/kg</strong> e entrega com h₂ = <strong>530 kJ/kg</strong>. Velocidades e alturas desprezíveis. Qual o trabalho específico consumido?`,
+focus:"Compressor recebe trabalho: w é negativo pela convenção. Módulo: h₂ − h₁.",
+alts:[["A","+230 kJ/kg"],["B","−230 kJ/kg"],["C","+300 kJ/kg"],["D","−530 kJ/kg"],["E","+830 kJ/kg"]],
+correct:"B",
+hint:"Compressor RECEBE trabalho → w < 0. Módulo é h₂ − h₁.",
+explains:{A:"Sinal errado. Compressor consome trabalho, w < 0.",C:"300 é h₁, não trabalho.",D:"−530 é h₂ com sinal.",E:"830 é h₁ + h₂, não Δh."},
+success:"Adiabático (q=0). Sobra h₁ = h₂ + w → w = 300 − 530 = −230 kJ/kg. Negativo confirma que o sistema recebe trabalho. Alternativa B."},
+
+{id:"pt-a1",tipo:"aula",disciplina:"portugues",assunto:"Interpretação — Tese e argumento",blocos:[
+{id:"A",label:"Conceito central",audio:"Cesgranrio adora textos dissertativos em que o autor defende uma tese usando argumentos. Tua missão na hora da prova é separar duas coisas: qual é a tese, ou seja, a ideia principal que o autor defende, e quais são os argumentos, as razões que ele apresenta pra convencer o leitor.",html:`<h1>Interpretação — Tese e argumento</h1><p class="subtitle">Conceito central</p><div class="card"><p>Cesgranrio adora textos dissertativos.</p><p><strong>Tese:</strong> a ideia principal que o autor defende.</p><p><strong>Argumentos:</strong> razões que o autor usa pra convencer o leitor.</p><p>Tua missão na prova: separar as duas coisas.</p></div>`},
+{id:"B",label:"Como identificar",audio:"Pra achar a tese, procura uma frase absoluta, geralmente no primeiro ou último parágrafo. Ela diz o que o autor pensa. Pra achar os argumentos, procura por conectores como porque, uma vez que, dado que, pois, já que. Cada argumento sustenta a tese.",html:`<h1>Como identificar</h1><div class="card"><div class="concept"><p><span class="label">Tese</span> aparece no <strong>1º ou último parágrafo</strong>. Frase absoluta, direta.</p><p class="example">Ex.: "A leitura é fundamental para o desenvolvimento cognitivo."</p></div><div class="concept"><p><span class="label">Argumento</span> vem depois de <strong>porque, pois, uma vez que, dado que, já que</strong>.</p><p class="example">Ex.: "...porque estimula áreas do cérebro ligadas à linguagem."</p></div></div>`},
+{id:"C",label:"Armadilhas",audio:"Duas armadilhas comuns. Primeira: exemplo não é argumento. Exemplo ilustra o argumento, mas não é ele. Segunda: opinião do leitor não é tese do texto. A prova quer o que o AUTOR pensa, não o que tu pensas.",html:`<h1>Armadilhas</h1><div class="trap"><strong>1) Exemplo não é argumento.</strong> Exemplo ilustra — não é.</div><div class="trap"><strong>2) Tua opinião não é a tese.</strong> A questão pergunta o que o AUTOR defende.</div>`}
+]},
+{id:"pt-q1",tipo:"questao",disciplina:"portugues",assunto:"Tese",
+enunciado:`Leia:<br><br><em>"A dependência crescente de smartphones tem reduzido a capacidade de concentração das pessoas. Pesquisas recentes mostram que a atenção sustentada caiu de 12 para 8 segundos em uma década. Isso preocupa educadores, que veem alunos incapazes de acompanhar uma aula completa."</em><br><br>A tese defendida pelo autor é:`,
+focus:"Tese = ideia principal. Procura frase absoluta.",
+alts:[["A","Educadores estão preocupados com alunos."],["B","A atenção caiu de 12 para 8 segundos."],["C","O uso de smartphones reduz a capacidade de concentração."],["D","Alunos são incapazes de acompanhar uma aula."],["E","Pesquisas trazem dados alarmantes."]],
+correct:"C",
+hint:"A primeira frase costuma trazer a tese. As outras são argumentos ou consequências que sustentam.",
+explains:{A:"Consequência, não tese.",B:"Dado usado como argumento.",D:"Outro dado que sustenta a tese.",E:"Meta-informação sobre a fonte."},
+success:"'A dependência crescente de smartphones tem reduzido a capacidade de concentração' é a tese. As demais informações são argumentos. Alternativa C."},
+{id:"pt-q2",tipo:"questao",disciplina:"portugues",assunto:"Conectores",
+enunciado:`"O engenheiro finalizou o projeto no prazo, ______ enfrentou dificuldades técnicas graves." O conector que expressa CONCESSÃO é:`,
+focus:"Concessão = 'apesar de'. Contraste apesar de dificuldade.",
+alts:[["A","porque"],["B","embora"],["C","portanto"],["D","assim que"],["E","à medida que"]],
+correct:"B",
+hint:"Concessão = 'apesar de'. Existe dificuldade, mas o resultado aconteceu mesmo assim.",
+explains:{A:"'Porque' = causa.",C:"'Portanto' = conclusão.",D:"'Assim que' = tempo.",E:"'À medida que' = proporção."},
+success:"'Embora' expressa concessão — apesar das dificuldades, o projeto foi finalizado. Alternativa B."},
+
+{id:"in-a1",tipo:"aula",disciplina:"ingles",assunto:"Reading — Skimming e scanning",blocos:[
+{id:"A",label:"Duas técnicas",audio:"Prova de inglês da Cesgranrio é reading, não fala nem escrita. Duas técnicas resolvem noventa por cento das questões. Skimming: leitura rápida pra pegar a ideia geral do texto. Scanning: busca de palavra específica no texto pra responder à questão.",html:`<h1>Reading — Skimming e scanning</h1><p class="subtitle">Duas técnicas resolvem 90% das questões</p><div class="card"><div class="concept"><p><span class="label">Skimming</span> — leitura rápida pra pegar a <strong>ideia geral</strong>.</p><p class="example">Lê título, primeira frase de cada parágrafo, conclusão. 30 segundos.</p></div><div class="concept"><p><span class="label">Scanning</span> — busca de <strong>palavra específica</strong> pra responder a questão.</p><p class="example">Lê a pergunta → procura palavras-chave no texto → lê ao redor.</p></div></div>`},
+{id:"B",label:"Ordem certa",audio:"Ordem correta na prova: primeiro lê a pergunta em português. Depois vai no texto e faz scanning pra achar a resposta. Não gaste tempo lendo o texto todo antes de saber o que buscar.",html:`<h1>Ordem certa</h1><div class="card"><ol><li>Lê a <strong>pergunta</strong> primeiro</li><li>Identifica <strong>palavra-chave</strong></li><li>Vai no texto e faz <strong>scanning</strong></li><li>Lê 2 linhas antes e 2 depois</li><li>Marca alternativa</li></ol></div><div class="trap"><strong>Não</strong> leias o texto todo antes de saber a pergunta.</div>`}
+]},
+{id:"in-q1",tipo:"questao",disciplina:"ingles",assunto:"Vocabulary — technical",
+enunciado:`In an oil refinery text: <em>"The <strong>throughput</strong> of the plant exceeded 200,000 barrels per day."</em><br><br>The word "throughput" is closest in meaning to:`,
+focus:"Throughput = quantidade processada em um período. Contexto: '200.000 barris por dia'.",
+alts:[["A","cost"],["B","volume processed"],["C","efficiency"],["D","temperature"],["E","pressure"]],
+correct:"B",
+hint:"Contexto: 'barrels per day' — quantidade que passou pela planta. Vocabulário técnico petrolífero.",
+explains:{A:"'Cost' = custo. Não bate.",C:"'Efficiency' seria percentual. Texto dá quantidade absoluta.",D:"'Temperature' não relacionado.",E:"'Pressure' não relacionado."},
+success:"'Throughput' = volume processado / vazão total. Termo técnico de refino. Alternativa B."},
+{id:"in-q2",tipo:"questao",disciplina:"ingles",assunto:"Reading — main idea",
+enunciado:`Read: <em>"Pipeline transportation remains the safest and most economical method for moving crude oil over long distances. Despite public concerns about spills, statistics show that pipelines have fewer incidents per barrel-mile than trucks or trains."</em><br><br>The main idea is:`,
+focus:"Main idea = ideia principal do parágrafo. Não confundas com detalhes.",
+alts:[["A","Pipelines have public safety concerns."],["B","Pipelines are safer and more economical than trucks and trains."],["C","Crude oil must be transported long distances."],["D","Trucks are less safe than pipelines."],["E","Spills are the main problem in pipelines."]],
+correct:"B",
+hint:"Primeira frase costuma trazer a ideia principal.",
+explains:{A:"Detalhe (concessão), não a ideia principal.",C:"Premissa, não a tese.",D:"Comparação parcial.",E:"Contradiz o texto."},
+success:"Primeira frase = tese: pipelines são o método mais seguro e econômico. Alternativa B."}
+];
+
+const DISC={termodinamica:{nome:"Termodinâmica",icone:"TE",cls:"te"},portugues:{nome:"Português",icone:"PT",cls:"pt"},ingles:{nome:"Inglês",icone:"IN",cls:"in"}};
+
+// SRS
+function today(){return new Date().toISOString().split('T')[0]}
+function addDays(d){const x=new Date();x.setDate(x.getDate()+d);return x.toISOString().split('T')[0]}
+function updateSRS(s,q){if(q<3){s.reps=0;s.interval=1}else{if(s.reps===0)s.interval=1;else if(s.reps===1)s.interval=3;else s.interval=Math.round(s.interval*s.easiness);s.reps++}s.easiness=Math.max(1.3,s.easiness+0.1-(5-q)*(0.08+(5-q)*0.02));s.nextDue=addDays(s.interval);return s}
+function newSRS(){return{reps:0,interval:0,easiness:2.5,nextDue:today()}}
+function predict(s,q){const p=JSON.parse(JSON.stringify(s));updateSRS(p,q);return p.interval}
+
+// Storage
+let db=null;
+function openDB(){return new Promise((r,rj)=>{const q=indexedDB.open('transpetro',1);q.onupgradeneeded=e=>e.target.result.createObjectStore('srs',{keyPath:'id'});q.onsuccess=e=>{db=e.target.result;r(db)};q.onerror=rj})}
+function saveState(id,s){if(!db)return Promise.resolve();return new Promise(r=>{const t=db.transaction('srs','readwrite');t.objectStore('srs').put({id,...s});t.oncomplete=()=>r()})}
+function loadAll(){if(!db)return Promise.resolve({});return new Promise(r=>{const t=db.transaction('srs','readonly');const q=t.objectStore('srs').getAll();q.onsuccess=()=>{const m={};q.result.forEach(x=>m[x.id]=x);r(m)}})}
+
+const APP={states:{},session:[],currentCard:null,voice:null,qAttempts:0,qWrong:[]};
+
+function pickVoice(){const v=speechSynthesis.getVoices();return v.find(x=>/pt.?br/i.test(x.lang)||/brasil/i.test(x.name))||v.find(x=>/daniel/i.test(x.name)&&/pt/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))||null}
+function loadVoice(){APP.voice=pickVoice();const el=document.getElementById('audioStatus');if(APP.voice)el.textContent='🔊 '+APP.voice.name;else el.textContent='Sem voz PT instalada'}
+function speak(t){if(!APP.voice)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/<[^>]+>/g,' '));u.voice=APP.voice;u.lang=APP.voice.lang||'pt-BR';u.rate=1.0;speechSynthesis.speak(u)}
+if(speechSynthesis.getVoices().length>0)loadVoice();else speechSynthesis.addEventListener('voiceschanged',loadVoice);
+
+function buildSession(f){const t=today();return CARDS.filter(c=>(!f||c.disciplina===f)&&(!APP.states[c.id]||APP.states[c.id].nextDue<=t)).slice(0,20)}
+function countDue(){const t=today(),c={total:0};Object.keys(DISC).forEach(d=>c[d]=0);CARDS.forEach(x=>{if(!APP.states[x.id]||APP.states[x.id].nextDue<=t){c.total++;c[x.disciplina]++}});return c}
+
+function renderHome(){speechSynthesis.cancel();document.getElementById('btnHome').style.display='none';document.getElementById('headerTitle').textContent='Transpetro';document.getElementById('breadcrumb').textContent='Estudo diário';document.getElementById('progress').style.display='none';
+const c=countDue(),h=new Date().getHours(),g=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite',s=Object.keys(APP.states).length,t=CARDS.length;
+document.getElementById('main').innerHTML=`<div class="home-hero"><div class="greeting">${g}</div><h1>${c.total>0?c.total+' cards pra hoje':'Tudo em dia'}</h1><div class="home-stats"><div class="stat"><div class="n">${s}</div><div class="l">Estudados</div></div><div class="stat"><div class="n">${t}</div><div class="l">Total</div></div><div class="stat"><div class="n">${Math.round(s/t*100)}%</div><div class="l">Progresso</div></div></div></div><h2>Disciplinas</h2><div class="subject-list">${Object.entries(DISC).map(([id,d])=>`<button class="subject-item" data-d="${id}"><div class="subject-icon ${d.cls}">${d.icone}</div><div class="subject-body"><div class="subject-name">${d.nome}</div><div class="subject-meta">${c[id]} card${c[id]!==1?'s':''} pra hoje</div></div><div class="subject-arrow">›</div></button>`).join('')}</div>`;
+document.querySelectorAll('.subject-item').forEach(b=>b.addEventListener('click',()=>startSession(b.dataset.d)));
+document.getElementById('footer').innerHTML=c.total>0?`<button class="btn" id="bStart">▶ Estudar tudo (${c.total})</button>`:`<button class="btn" disabled>Nada pendente hoje</button>`;
+if(c.total>0)document.getElementById('bStart').addEventListener('click',()=>startSession(null));
+window.scrollTo(0,0)}
+
+function startSession(f){APP.session=buildSession(f);if(APP.session.length===0){renderHome();return}document.getElementById('btnHome').style.display='inline-block';nextCard()}
+
+function nextCard(){if(APP.session.length===0){renderDone();return}APP.currentCard=APP.session.shift();APP.qAttempts=0;APP.qWrong=[];if(APP.currentCard.tipo==='aula')renderBloco(0);else renderQuestao()}
+
+function renderBloco(idx){const c=APP.currentCard,b=c.blocos[idx],d=DISC[c.disciplina];
+document.getElementById('headerTitle').textContent=c.assunto;
+document.getElementById('breadcrumb').innerHTML=`${d.nome} › <strong>${b.label}</strong>`;
+const p=document.getElementById('progress');p.style.display='flex';p.innerHTML=c.blocos.map((_,i)=>`<div class="step ${i<idx?'done':i===idx?'active':''}"></div>`).join('');
+document.getElementById('main').innerHTML=b.html;
+const last=idx===c.blocos.length-1;
+document.getElementById('footer').innerHTML=`<button class="btn secondary icon" id="bp" ${idx===0?'disabled':''}>←</button><button class="btn" id="bpl">▶ Tocar</button><button class="btn ${last?'':'secondary'} icon" id="bn">${last?'✓':'→'}</button>`;
+document.getElementById('bp').addEventListener('click',()=>idx>0&&renderBloco(idx-1));
+document.getElementById('bn').addEventListener('click',()=>{if(last)renderHowWasIt();else renderBloco(idx+1)});
+document.getElementById('bpl').addEventListener('click',()=>{speak(b.audio);if(b.animate)animateSteps()});
+window.scrollTo(0,0)}
+
+function animateSteps(){const s=document.querySelectorAll('.step-anim');s.forEach(x=>x.classList.remove('visible'));const d=[3000,6500,10000,14000,18500,22500,27000];s.forEach((x,i)=>setTimeout(()=>x.classList.add('visible'),d[i]||i*4000))}
+
+function renderQuestao(){const c=APP.currentCard,d=DISC[c.disciplina];
+document.getElementById('headerTitle').textContent=c.assunto;
+document.getElementById('breadcrumb').innerHTML=`${d.nome} › <strong>Questão</strong>`;
+document.getElementById('progress').style.display='none';
+document.getElementById('main').innerHTML=`<div class="card"><p class="question-stmt">${c.enunciado}</p><div class="focus-hint"><strong>Foca em:</strong> ${c.focus}</div><div class="alternatives">${c.alts.map(([k,t])=>`<button class="alt" data-k="${k}"><span class="letter">${k}</span> ${t}</button>`).join('')}</div><div id="feedback"></div></div>`;
+document.querySelectorAll('.alt').forEach(b=>b.addEventListener('click',()=>handleAnswer(b.dataset.k)));
+document.getElementById('footer').innerHTML=`<button class="btn secondary" id="bs">Pular</button><button class="btn" id="brq">▶ Ler comando</button>`;
+document.getElementById('bs').addEventListener('click',()=>nextCard());
+document.getElementById('brq').addEventListener('click',()=>speak(c.enunciado+' Foca em: '+c.focus));
+window.scrollTo(0,0)}
+
+function handleAnswer(k){const c=APP.currentCard,b=document.querySelector(`.alt[data-k="${k}"]`);if(!b||b.disabled)return;
+if(k===c.correct){b.classList.add('correct');document.querySelectorAll('.alt').forEach(x=>x.disabled=true);showFB('success','Correto!',c.success);speak(c.success);document.getElementById('footer').innerHTML=`<button class="btn" id="bcont">Continuar →</button>`;document.getElementById('bcont').addEventListener('click',()=>renderHowWasIt())}
+else{APP.qAttempts++;APP.qWrong.push(k);b.classList.add('wrong','dw');b.disabled=true;
+if(APP.qAttempts===1){showFB('hint','Pense o seguinte',c.hint);speak(c.hint)}
+else{const msg=c.explains[k]||'Alternativa incorreta.';showFB('explain','Por que essa está errada',msg);speak(msg)}}}
+
+function showFB(t,ti,m){const f=document.getElementById('feedback');if(!f)return;f.className='feedback '+t;f.innerHTML=`<strong>${ti}</strong>${m}`;f.scrollIntoView({behavior:'smooth',block:'center'})}
+
+function renderHowWasIt(){document.getElementById('progress').style.display='none';const c=APP.currentCard,s=APP.states[c.id]||newSRS();
+let hint='';
+if(c.tipo==='questao'&&APP.qAttempts===0)hint='Acertaste de primeira!';
+else if(c.tipo==='questao'&&APP.qAttempts>0)hint=`Errou ${APP.qAttempts}× antes de acertar`;
+document.getElementById('main').innerHTML=`<h1 class="hwi-title">Como foi?</h1>${hint?`<p class="subtitle" style="text-align:center">${hint}</p>`:''}<div class="hwi-buttons"><button class="hwi-btn err" data-q="1"><span class="lbl">Errei / não sei</span><span class="interval">Amanhã</span></button><button class="hwi-btn hard" data-q="3"><span class="lbl">Difícil</span><span class="interval">~${predict(s,3)}d</span></button><button class="hwi-btn ok" data-q="4"><span class="lbl">Médio</span><span class="interval">~${predict(s,4)}d</span></button><button class="hwi-btn easy" data-q="5"><span class="lbl">Fácil</span><span class="interval">~${predict(s,5)}d</span></button></div>`;
+document.querySelectorAll('.hwi-btn').forEach(b=>b.addEventListener('click',async()=>{const q=parseInt(b.dataset.q);const ns=updateSRS(s,q);APP.states[c.id]=ns;await saveState(c.id,ns);nextCard()}));
+document.getElementById('footer').innerHTML='';window.scrollTo(0,0)}
+
+function renderDone(){document.getElementById('main').innerHTML=`<div class="done-hero"><div class="emoji">🎉</div><h1>Terminou por hoje!</h1><p class="subtitle">Volta amanhã. O algoritmo vai te mostrar o que precisas revisar.</p></div>`;
+document.getElementById('progress').style.display='none';
+document.getElementById('footer').innerHTML=`<button class="btn" id="bh">Voltar ao início</button>`;
+document.getElementById('bh').addEventListener('click',()=>renderHome())}
+
+document.getElementById('btnHome').addEventListener('click',()=>{if(confirm('Voltar ao início?'))renderHome()});
+
+async function init(){await openDB();APP.states=await loadAll();renderHome()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
