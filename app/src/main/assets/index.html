@@ -218,7 +218,7 @@ const APP={states:{},session:[],currentCard:null,voice:null,qAttempts:0,qWrong:[
 
 function hasWebSpeech(){try{return typeof speechSynthesis!=='undefined'&&typeof SpeechSynthesisUtterance!=='undefined'}catch(e){return false}}
 function hasNative(){try{return typeof NativeTTS!=='undefined'&&NativeTTS.isReady()}catch(e){return false}}
-function stopSpeech(){try{if(hasNative())NativeTTS.cancel();else if(hasWebSpeech())stopSpeech()}catch(e){}}
+function stopSpeech(){try{if(hasNative())NativeTTS.cancel();else if(hasWebSpeech())speechSynthesis.cancel()}catch(e){}}
 function pickVoice(){if(!hasWebSpeech())return null;try{const v=speechSynthesis.getVoices();return v.find(x=>/pt.?br/i.test(x.lang)||/brasil/i.test(x.name))||v.find(x=>/daniel/i.test(x.name)&&/pt/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))||null}catch(e){return null}}
 function loadVoice(){try{APP.voice=pickVoice();const el=document.getElementById('audioStatus');if(!el)return;if(hasNative())el.textContent='🔊 Android TTS (nativo)';else if(APP.voice)el.textContent='🔊 '+APP.voice.name;else el.textContent='Sem TTS - toca em silencio'}catch(e){}}
 function speak(t){try{const clean=(t||'').replace(/<[^>]+>/g,' ');if(hasNative()){NativeTTS.cancel();NativeTTS.speak(clean);return}if(!hasWebSpeech()||!APP.voice)return;stopSpeech();const u=new SpeechSynthesisUtterance(clean);u.voice=APP.voice;u.lang=APP.voice.lang||'pt-BR';u.rate=1.0;speechSynthesis.speak(u)}catch(e){}}
