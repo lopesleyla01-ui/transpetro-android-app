@@ -216,10 +216,12 @@ function loadAll(){if(!db)return Promise.resolve({});return new Promise(r=>{cons
 
 const APP={states:{},session:[],currentCard:null,voice:null,qAttempts:0,qWrong:[]};
 
-function pickVoice(){const v=speechSynthesis.getVoices();return v.find(x=>/pt.?br/i.test(x.lang)||/brasil/i.test(x.name))||v.find(x=>/daniel/i.test(x.name)&&/pt/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))||null}
-function loadVoice(){APP.voice=pickVoice();const el=document.getElementById('audioStatus');if(APP.voice)el.textContent='🔊 '+APP.voice.name;else el.textContent='Sem voz PT instalada'}
-function speak(t){if(!APP.voice)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/<[^>]+>/g,' '));u.voice=APP.voice;u.lang=APP.voice.lang||'pt-BR';u.rate=1.0;speechSynthesis.speak(u)}
-if(speechSynthesis.getVoices().length>0)loadVoice();else speechSynthesis.addEventListener('voiceschanged',loadVoice);
+function hasWebSpeech(){try{return typeof speechSynthesis!=='undefined'&&typeof SpeechSynthesisUtterance!=='undefined'}catch(e){return false}}
+function hasNative(){try{return typeof NativeTTS!=='undefined'&&NativeTTS.isReady()}catch(e){return false}}
+function pickVoice(){if(!hasWebSpeech())return null;try{const v=speechSynthesis.getVoices();return v.find(x=>/pt.?br/i.test(x.lang)||/brasil/i.test(x.name))||v.find(x=>/daniel/i.test(x.name)&&/pt/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))||null}catch(e){return null}}
+function loadVoice(){try{APP.voice=pickVoice();const el=document.getElementById('audioStatus');if(!el)return;if(hasNative())el.textContent='🔊 Android TTS (nativo)';else if(APP.voice)el.textContent='🔊 '+APP.voice.name;else el.textContent='Sem TTS - toca em silencio'}catch(e){}}
+function speak(t){try{const clean=(t||'').replace(/<[^>]+>/g,' ');if(hasNative()){NativeTTS.cancel();NativeTTS.speak(clean);return}if(!hasWebSpeech()||!APP.voice)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(clean);u.voice=APP.voice;u.lang=APP.voice.lang||'pt-BR';u.rate=1.0;speechSynthesis.speak(u)}catch(e){}}
+try{if(hasWebSpeech()){if(speechSynthesis.getVoices().length>0)loadVoice();else speechSynthesis.addEventListener('voiceschanged',loadVoice)}else{setTimeout(loadVoice,500)}}catch(e){setTimeout(loadVoice,500)}
 
 function buildSession(f){const t=today();return CARDS.filter(c=>(!f||c.disciplina===f)&&(!APP.states[c.id]||APP.states[c.id].nextDue<=t)).slice(0,20)}
 function countDue(){const t=today(),c={total:0};Object.keys(DISC).forEach(d=>c[d]=0);CARDS.forEach(x=>{if(!APP.states[x.id]||APP.states[x.id].nextDue<=t){c.total++;c[x.disciplina]++}});return c}
